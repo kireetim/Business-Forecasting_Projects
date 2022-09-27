@@ -1,0 +1,85 @@
+---
+title: "Homework 3"
+author: "Kireeti Mantrala"
+date: "9/26/2022"
+output: html_document
+---
+
+```{r}
+library(datasets)
+```
+
+## Time Series dataset for UKgas
+
+* The data shows gas consumption in the UK from 1960-1986
+* The data is divided quarterly in millions of therms.
+
+## Plot for the dataset
+
+```{r}
+plot(UKgas, main = "Gas consumption in the UK", xlab = "Years", ylab = "Million Therms")
+
+```
+
+* This is the timeseries plot for the dataseries with x-axis showing years and y-axis showing gas consumption in million therms
+* The plot is a combination of upward trend with seasonal time series throughout all the quarters.
+* The Acf prediction for the above time series plot would be a decreasing trend above the confidence interval along with wavy pattern since the series is both trend and seasonal.
+
+## Autocorrelationfunction for the dataset
+
+```{r}
+acf(UKgas)
+```
+
+* Most of the values are above the confidence interval. Hence, the historical data will make a significant difference in the forecast.
+* As predicted the peaks are in the decreasing pattern showing there is a trend in the time series.
+* Also, the pattern showns equally wavy nature, showing this also a seasonal time series.
+
+## HoltWinters Filtering
+
+```{r}
+ukhw <- HoltWinters(UKgas)
+attributes(ukhw)
+plot(ukhw)
+```
+
+* The HoltWinters filtering shows that most of the prediction was accurately aligned, except durning the period from 1970-1973 where there is a minor deviation.
+
+```{r}
+library(forecast)
+ukhwf <- forecast(ukhw)
+attributes(ukhwf)
+```
+
+## Residual Plot
+
+```{r}
+plot(ukhwf$residuals)
+```
+
+* The residual plot shows that the residuals are very random and unpredictable.
+
+```{r}
+plot(ukhwf$level)
+plot(ukhwf$mean)
+plot(ukhwf$lower)
+plot(ukhwf$upper)
+plot(ukhwf$x)
+plot(ukhwf$fitted)
+hist(ukhwf$residuals)
+```
+
+* The histogram looks vaguly distributed with zero as centre but it appears to have slight deviations and not a perfect uniform distribution.
+
+```{r}
+Acf(ukhwf$residuals)
+```
+
+* Almost all the bars are within the confidence interval except for one value.
+
+```{r}
+accuracy(ukhwf)
+```
+
+* Generally the Root mean square value should be lower, this shows a very high value showing this is not a correct estimate.
+* The HoltWinters filtering shows almost accurate prediction, but the accuracy here shows a highr RMSE value, which is contradicting.
