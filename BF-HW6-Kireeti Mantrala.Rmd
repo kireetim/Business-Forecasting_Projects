@@ -1,0 +1,54 @@
+---
+title: "ARIMA-HW_BF"
+output: html_document
+date: "2022-11-12"
+---
+
+```{r}
+library(fpp)
+library(fpp2)
+library(forecast)
+library(datasets)
+library(TTR)
+
+## My Dataset - UKgas
+UKgas
+
+plot(UKgas)
+Acf(UKgas)
+## Acf plot shows both downward trend and seasonality presense here.
+
+fit3 <- auto.arima(UKgas,trace=TRUE, stepwise = FALSE )
+fit3
+ndiffs(UKgas)
+ndiffs((diff(UKgas,4)))
+## We got ndiffs as 1 now
+tsdisplay(diff(UKgas,4))
+arima_fit <- auto.arima(UKgas,trace=TRUE, stepwise = FALSE )
+arima_fit
+
+## Best Model as per ARIMA is, (3,1,1)(0,1,1)[4]
+## AIC value is 1024.84 which is the lowest for the above mentioned best model.
+
+attributes(arima_fit)
+plot(forecast(arima_fit,h=5,level=c(99.5)), main = 'Forecast of the ARIMA model', xlab = 'Year', ylab = 'Expenditure')
+Acf(arima_fit$residuals)
+## All the ponts lie inbetween the confidence interval only.
+## Hence, this can be considered the best forecast for the data.
+Box.test(residuals(arima_fit), lag=20, type="Ljung")
+
+## The p-value is greater than 0.05 which shows the null hypothesis is supported.
+## Also, the residuals are random here.
+plot.ts(residuals(arima_fit))
+hist(arima_fit$residuals)
+## The histogram shows that the residuals have a mean of zero.
+
+tsdiag(arima_fit)
+##  The basic residual plot looks normal. Two residuals are very nearer to touch the z-score of 2 but did not touch the line.
+## No significant values are present in the Acf plot.
+## This proves that the ARIMA model is the best fit forecast for the data set UKgas.
+
+
+
+```
+
